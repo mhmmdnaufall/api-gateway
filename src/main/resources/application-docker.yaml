@@ -1,0 +1,49 @@
+server:
+  port: 8080
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka:password@discovery-server:8761/eureka
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak-microservice:8080/realms/spring-boot-microservices-realm
+
+  cloud:
+    gateway:
+      mvc:
+        routes:
+          # Product Service Route
+          - id: product-service
+            uri: lb://product-service
+            predicates:
+              - Path=/api/products
+
+          # Order Service Route
+          - id: order-service
+            uri: lb://order-service
+            predicates:
+              - Path=/api/orders
+
+          # Discovery Server Route
+          - id: discovery-server
+            uri: http://discovery-server:8761
+            predicates:
+              - Path=/eureka/web
+            filters:
+              - SetPath=/
+
+          # Discovery Server Static Resources Route
+          - id: discovery-server-static
+            uri: http://discovery-server:8761
+            predicates:
+              - Path=/eureka/**
+
+management:
+  zipkin:
+    tracing:
+      endpoint: http://zipkin-microservice:9411
