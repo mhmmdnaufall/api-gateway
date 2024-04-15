@@ -51,6 +51,13 @@ logging:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 
 management:
+
+  # Actuator Prometheus Endpoint
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+
   zipkin:
     tracing:
       endpoint: http://localhost:9411/api/v2/spans
